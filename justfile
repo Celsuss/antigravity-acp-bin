@@ -56,10 +56,10 @@ probe *flags:
         SERVER_BIN="agy_acp_server.par"
     elif [ -x "pkg/antigravity-acp-bin/usr/lib/antigravity-acp/agy_acp_server.par" ]; then
         SERVER_BIN="pkg/antigravity-acp-bin/usr/lib/antigravity-acp/agy_acp_server.par"
-        export ANTIGRAVITY_HARNESS_PATH="$(pwd)/pkg/antigravity-acp-bin/usr/lib/antigravity-acp"
+        export ANTIGRAVITY_HARNESS_PATH="$(pwd)/pkg/antigravity-acp-bin/usr/lib/antigravity-acp/localharness_external"
     elif [ -x "src/agy_acp_server.par" ]; then
         SERVER_BIN="src/agy_acp_server.par"
-        export ANTIGRAVITY_HARNESS_PATH="$(pwd)/src"
+        export ANTIGRAVITY_HARNESS_PATH="$(pwd)/src/localharness_external"
     else
         echo "Error: agy_acp_server.par not found in PATH or local build dirs (pkg/, src/)." >&2
         echo "Build the package with 'just build' or install it with 'just install' first." >&2

@@ -1,7 +1,7 @@
 pkgbase = antigravity-acp-bin
 	pkgdesc = Agent Client Protocol (ACP) server for Google Antigravity (prebuilt binary)
 	pkgver = 1.4.0
-	pkgrel = 1
+	pkgrel = 2
 	url = https://antigravity.google/docs/ide/extensions
 	arch = x86_64
 	arch = aarch64

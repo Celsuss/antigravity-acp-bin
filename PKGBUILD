@@ -2,7 +2,7 @@
 
 pkgname=antigravity-acp-bin
 pkgver=1.4.0
-pkgrel=1
+pkgrel=2
 pkgdesc="Agent Client Protocol (ACP) server for Google Antigravity (prebuilt binary)"
 arch=('x86_64' 'aarch64')
 url="https://antigravity.google/docs/ide/extensions"
@@ -27,7 +27,11 @@ package() {
   cat << 'EOF' > "${pkgdir}/usr/bin/agy-acp-server"
 #!/usr/bin/env bash
 set -e
-export ANTIGRAVITY_HARNESS_PATH="${ANTIGRAVITY_HARNESS_PATH:-/usr/lib/antigravity-acp}"
+if [ -z "$ANTIGRAVITY_HARNESS_PATH" ]; then
+  export ANTIGRAVITY_HARNESS_PATH="/usr/lib/antigravity-acp/localharness_external"
+elif [ -d "$ANTIGRAVITY_HARNESS_PATH" ]; then
+  export ANTIGRAVITY_HARNESS_PATH="${ANTIGRAVITY_HARNESS_PATH%/}/localharness_external"
+fi
 EXTRA_FLAGS=()
 if [ ! -f /proc/net/if_inet6 ] || ! grep -q "^00000000000000000000000000000001" /proc/net/if_inet6 2>/dev/null; then
   EXTRA_FLAGS+=("--enforce_kernel_ipv6_support=false")
