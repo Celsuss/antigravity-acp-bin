@@ -5,12 +5,14 @@ pkgbase = antigravity-acp-bin
 	url = https://antigravity.google/docs/ide/extensions
 	arch = x86_64
 	arch = aarch64
-	license = custom:proprietary
+	license = LicenseRef-Proprietary
 	depends = glibc
-	provides = antigravity-acp
-	provides = agy-acp-server
+	provides = antigravity-acp=1.3.0
+	provides = agy-acp-server=1.3.0
 	conflicts = antigravity-acp
+	conflicts = agy-acp-server
 	options = !strip
+	options = !debug
 	source_x86_64 = https://dl.google.com/agy-extensions/releases/linux/agy-acp-server-1.3.0-linux-x86_64.zip
 	sha256sums_x86_64 = 9fb60956af0a9d76220a4db91ca9ac88e2a2372ad68f985ab5fceace6b825b96
 	source_aarch64 = https://dl.google.com/agy-extensions/releases/linux/agy-acp-server-1.3.0-linux-arm64.zip

@@ -6,11 +6,11 @@ pkgrel=1
 pkgdesc="Agent Client Protocol (ACP) server for Google Antigravity (prebuilt binary)"
 arch=('x86_64' 'aarch64')
 url="https://antigravity.google/docs/ide/extensions"
-license=('custom:proprietary')
+license=('LicenseRef-Proprietary')
 depends=('glibc')
-provides=('antigravity-acp' 'agy-acp-server')
-conflicts=('antigravity-acp')
-options=('!strip')
+provides=("antigravity-acp=${pkgver}" "agy-acp-server=${pkgver}")
+conflicts=('antigravity-acp' 'agy-acp-server')
+options=('!strip' '!debug')
 
 source_x86_64=("https://dl.google.com/agy-extensions/releases/linux/agy-acp-server-${pkgver}-linux-x86_64.zip")
 source_aarch64=("https://dl.google.com/agy-extensions/releases/linux/agy-acp-server-${pkgver}-linux-arm64.zip")
@@ -26,11 +26,12 @@ package() {
 
   # Create symlinks in /usr/bin/
   install -d "${pkgdir}/usr/bin"
-  ln -s /usr/lib/antigravity-acp/agy_acp_server.par "${pkgdir}/usr/bin/agy_acp_server.par"
-  ln -s /usr/lib/antigravity-acp/agy_acp_server.par "${pkgdir}/usr/bin/agy-acp-server"
+  ln -sf /usr/lib/antigravity-acp/agy_acp_server.par "${pkgdir}/usr/bin/agy_acp_server.par"
+  ln -sf /usr/lib/antigravity-acp/agy_acp_server.par "${pkgdir}/usr/bin/agy-acp-server"
 
   # Install license notice
-  cat << 'EOF' | install -Dm644 /dev/stdin "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+  install -d "${pkgdir}/usr/share/licenses/${pkgname}"
+  cat << 'EOF' > "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
 Google Antigravity Terms of Service & Software License Notice
 ==============================================================
 

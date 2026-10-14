@@ -19,10 +19,10 @@ Ensure you have Arch Linux development utilities installed:
 sudo pacman -S --needed base-devel git
 ```
 
-Optional (recommended task runner):
+Optional (recommended task runner and linter):
 
 ```bash
-sudo pacman -S --needed just
+sudo pacman -S --needed just namcap
 ```
 
 ---
@@ -212,6 +212,7 @@ When a new upstream release is published, update the package using the following
 ---
 
 ## Upstream & Legal
-
+ 
 - **Upstream Documentation**: [https://antigravity.google/docs/ide/extensions](https://antigravity.google/docs/ide/extensions)
-- **License**: `custom:proprietary` (Subject to [Google Terms of Service](https://policies.google.com/terms))
+- **Repository Packaging License**: [Apache License 2.0](LICENSE)
+- **Packaged Upstream Software License**: `LicenseRef-Proprietary` (Subject to [Google Terms of Service](https://policies.google.com/terms) and [Google Privacy Policy](https://policies.google.com/privacy))
