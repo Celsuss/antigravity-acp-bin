@@ -32,8 +32,12 @@ lint:
         if [ -f "$pkg" ]; then namcap "$pkg"; fi
     done
 
-# Clean build artifacts, downloaded archives, and pkg/src dirs
+# Clean build artifacts and staging directories
 clean:
+    rm -rf pkg/ src/ *.pkg.tar.zst *.pkg.tar.xz *.pkg.tar.gz *.log
+
+# Full clean including downloaded source archives
+distclean: clean
     rm -rf pkg/ src/ *.pkg.tar.zst *.pkg.tar.xz *.pkg.tar.gz *.zip *.tar.gz *.par
 
 # Run a 1-line JSON-RPC initialization test via stdin
@@ -46,12 +50,16 @@ probe *flags:
         EXTRA_FLAGS="--enforce_kernel_ipv6_support=false"
     fi
     SERVER_BIN=""
-    if command -v agy_acp_server.par >/dev/null 2>&1; then
+    if command -v agy-acp-server >/dev/null 2>&1; then
+        SERVER_BIN="agy-acp-server"
+    elif command -v agy_acp_server.par >/dev/null 2>&1; then
         SERVER_BIN="agy_acp_server.par"
-    elif [ -x "pkg/antigravity-acp-bin/usr/bin/agy_acp_server.par" ]; then
-        SERVER_BIN="pkg/antigravity-acp-bin/usr/bin/agy_acp_server.par"
+    elif [ -x "pkg/antigravity-acp-bin/usr/lib/antigravity-acp/agy_acp_server.par" ]; then
+        SERVER_BIN="pkg/antigravity-acp-bin/usr/lib/antigravity-acp/agy_acp_server.par"
+        export ANTIGRAVITY_HARNESS_PATH="$(pwd)/pkg/antigravity-acp-bin/usr/lib/antigravity-acp"
     elif [ -x "src/agy_acp_server.par" ]; then
         SERVER_BIN="src/agy_acp_server.par"
+        export ANTIGRAVITY_HARNESS_PATH="$(pwd)/src"
     else
         echo "Error: agy_acp_server.par not found in PATH or local build dirs (pkg/, src/)." >&2
         echo "Build the package with 'just build' or install it with 'just install' first." >&2

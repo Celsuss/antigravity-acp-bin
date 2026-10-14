@@ -1,21 +1,21 @@
 pkgbase = antigravity-acp-bin
 	pkgdesc = Agent Client Protocol (ACP) server for Google Antigravity (prebuilt binary)
-	pkgver = 1.3.0
+	pkgver = 1.4.0
 	pkgrel = 1
 	url = https://antigravity.google/docs/ide/extensions
 	arch = x86_64
 	arch = aarch64
 	license = LicenseRef-Proprietary
 	depends = glibc
-	provides = antigravity-acp=1.3.0
-	provides = agy-acp-server=1.3.0
+	provides = antigravity-acp=1.4.0
+	provides = agy-acp-server=1.4.0
 	conflicts = antigravity-acp
 	conflicts = agy-acp-server
 	options = !strip
 	options = !debug
-	source_x86_64 = https://dl.google.com/agy-extensions/releases/linux/agy-acp-server-1.3.0-linux-x86_64.zip
-	sha256sums_x86_64 = 9fb60956af0a9d76220a4db91ca9ac88e2a2372ad68f985ab5fceace6b825b96
-	source_aarch64 = https://dl.google.com/agy-extensions/releases/linux/agy-acp-server-1.3.0-linux-arm64.zip
-	sha256sums_aarch64 = 500b0bc0fb858e88f4df404d4cedf80bf9298c178291e39e383d6c50b111cbdf
+	source_x86_64 = https://dl.google.com/agy-extensions/releases/linux/agy-acp-server-1.4.0-linux-x86_64.zip
+	sha256sums_x86_64 = fbb2d54dd94fb897845308d3b6b46187c627f1c60078ded81adeeaf8b90c5d7a
+	source_aarch64 = https://dl.google.com/agy-extensions/releases/linux/agy-acp-server-1.4.0-linux-arm64.zip
+	sha256sums_aarch64 = 3dc43a21f5402b23a4dba7b320a6745e9dbf4b6ead912ce9fc76011ea3a08a7e
 
 pkgname = antigravity-acp-bin

@@ -1,7 +1,7 @@
 # Maintainer: Jens Lordén <jenslorden@gmail.com>
 
 pkgname=antigravity-acp-bin
-pkgver=1.3.0
+pkgver=1.4.0
 pkgrel=1
 pkgdesc="Agent Client Protocol (ACP) server for Google Antigravity (prebuilt binary)"
 arch=('x86_64' 'aarch64')
@@ -14,24 +14,33 @@ options=('!strip' '!debug')
 
 source_x86_64=("https://dl.google.com/agy-extensions/releases/linux/agy-acp-server-${pkgver}-linux-x86_64.zip")
 source_aarch64=("https://dl.google.com/agy-extensions/releases/linux/agy-acp-server-${pkgver}-linux-arm64.zip")
-sha256sums_x86_64=('9fb60956af0a9d76220a4db91ca9ac88e2a2372ad68f985ab5fceace6b825b96')
-sha256sums_aarch64=('500b0bc0fb858e88f4df404d4cedf80bf9298c178291e39e383d6c50b111cbdf')
+sha256sums_x86_64=('fbb2d54dd94fb897845308d3b6b46187c627f1c60078ded81adeeaf8b90c5d7a')
+sha256sums_aarch64=('3dc43a21f5402b23a4dba7b320a6745e9dbf4b6ead912ce9fc76011ea3a08a7e')
 
 package() {
   # Install main binary and companion harness to /usr/lib/antigravity-acp
   install -Dm755 "${srcdir}/agy_acp_server.par" "${pkgdir}/usr/lib/antigravity-acp/agy_acp_server.par"
-  if [[ -f "${srcdir}/localharness_external" ]]; then
-    install -Dm755 "${srcdir}/localharness_external" "${pkgdir}/usr/lib/antigravity-acp/localharness_external"
-  fi
+  install -Dm755 "${srcdir}/localharness_external" "${pkgdir}/usr/lib/antigravity-acp/localharness_external"
 
-  # Create symlinks in /usr/bin/
+  # Install launcher wrapper in /usr/bin/
   install -d "${pkgdir}/usr/bin"
-  ln -sf /usr/lib/antigravity-acp/agy_acp_server.par "${pkgdir}/usr/bin/agy_acp_server.par"
-  ln -sf /usr/lib/antigravity-acp/agy_acp_server.par "${pkgdir}/usr/bin/agy-acp-server"
+  cat << 'EOF' > "${pkgdir}/usr/bin/agy-acp-server"
+#!/usr/bin/env bash
+set -e
+export ANTIGRAVITY_HARNESS_PATH="${ANTIGRAVITY_HARNESS_PATH:-/usr/lib/antigravity-acp}"
+EXTRA_FLAGS=()
+if [ ! -f /proc/net/if_inet6 ] || ! grep -q "^00000000000000000000000000000001" /proc/net/if_inet6 2>/dev/null; then
+  EXTRA_FLAGS+=("--enforce_kernel_ipv6_support=false")
+fi
+exec /usr/lib/antigravity-acp/agy_acp_server.par "${EXTRA_FLAGS[@]}" "$@"
+EOF
+  chmod 755 "${pkgdir}/usr/bin/agy-acp-server"
+
+  # Compatibility symlink for tools expecting agy_acp_server.par (e.g. Emacs agent-shell)
+  ln -sfr "${pkgdir}/usr/bin/agy-acp-server" "${pkgdir}/usr/bin/agy_acp_server.par"
 
   # Install license notice
-  install -d "${pkgdir}/usr/share/licenses/${pkgname}"
-  cat << 'EOF' > "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+  install -Dm644 /dev/stdin "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE" << 'EOF'
 Google Antigravity Terms of Service & Software License Notice
 ==============================================================
 

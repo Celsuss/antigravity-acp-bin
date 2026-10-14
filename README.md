@@ -5,8 +5,8 @@ Production-ready Arch Linux PKGBUILD repository for **`antigravity-acp-bin`**, p
 The package provides:
 - `/usr/lib/antigravity-acp/agy_acp_server.par`: The ACP server Python archive binary.
 - `/usr/lib/antigravity-acp/localharness_external`: The static companion local harness binary.
-- `/usr/bin/agy_acp_server.par`: Symlink required by Emacs `agent-shell`.
-- `/usr/bin/agy-acp-server`: Convenience CLI symlink.
+- `/usr/bin/agy-acp-server`: Launcher wrapper ensuring environment setup and transparent IPv6 loopback fallback.
+- `/usr/bin/agy_acp_server.par`: Compatibility symlink required by Emacs `agent-shell`.
 - `/usr/share/licenses/antigravity-acp-bin/LICENSE`: Terms of service and license notice.
 
 ---
@@ -57,8 +57,11 @@ just build
 # Build and install via pacman
 just install
 
-# Clean up build directories (pkg/, src/) and downloaded archives
+# Clean up build staging directories (pkg/, src/)
 just clean
+
+# Full clean including downloaded source archives (.zip)
+just distclean
 ```
 
 ---
@@ -79,7 +82,7 @@ Example `init.el` / `use-package` configuration:
   :config
   ;; agent-shell will automatically discover /usr/bin/agy_acp_server.par
   ;; Alternatively, explicitly configure the command if desired:
-  (setq agent-shell-google-binary "agy_acp_server.par"))
+  (setq agent-shell-antigravity-acp-command '("agy_acp_server.par" "--uid=")))
 ```
 
 ### 2. Zed Editor
@@ -120,13 +123,13 @@ You can test that the ACP server responds correctly to a JSON-RPC `initialize` h
 just probe
 
 # Or using shell directly:
-echo '{"jsonrpc":"2.0","id":0,"method":"initialize","params":{"protocolVersion":1,"clientCapabilities":{"fs":{"readTextFile":true,"writeTextFile":true}}}}' | agy_acp_server.par --uid=
+echo '{"jsonrpc":"2.0","id":0,"method":"initialize","params":{"protocolVersion":1,"clientCapabilities":{"fs":{"readTextFile":true,"writeTextFile":true}}}}' | agy-acp-server
 ```
 
 A healthy server will reply on stdout with JSON containing `agentCapabilities` and `agentInfo`:
 
 ```json
-{"jsonrpc":"2.0","id":0,"result":{"protocolVersion":1,"agentCapabilities":{...},"agentInfo":{"name":"antigravity-acp","title":"Google Antigravity","version":"1.3.0"}}}
+{"jsonrpc":"2.0","id":0,"result":{"protocolVersion":1,"agentCapabilities":{...},"agentInfo":{"name":"antigravity-acp","title":"Google Antigravity","version":"1.4.0"}}}
 ```
 
 ### Checking Third-Party Notices
@@ -134,21 +137,22 @@ A healthy server will reply on stdout with JSON containing `agentCapabilities` a
 To display all bundled third-party open-source software notices:
 
 ```bash
-agy_acp_server.par --notices
+agy-acp-server --notices
 ```
 
-### IPv6 Loopback Troubleshooting
+### Automatic IPv6 Loopback Handling
 
-If IPv6 is disabled system-wide (e.g. `net.ipv6.conf.all.disable_ipv6 = 1`), Google Abseil binaries may abort on startup with:
+If IPv6 is disabled system-wide (e.g. `net.ipv6.conf.all.disable_ipv6 = 1`), Google Abseil binaries abort on startup with:
 ```
 Check failed: loopback6_ok || !loopback4_ok This machine does not have an IPv6 loopback (::1) interface.
 ```
 
-To bypass this check on machines where IPv6 is disabled, pass the flag:
+The installed `/usr/bin/agy-acp-server` wrapper detects this condition automatically and passes `--enforce_kernel_ipv6_support=false`, ensuring all editors function seamlessly regardless of system IPv6 configuration.
+
+If invoking the raw binary `/usr/lib/antigravity-acp/agy_acp_server.par` directly without the wrapper, append:
 ```bash
-agy_acp_server.par --enforce_kernel_ipv6_support=false
+/usr/lib/antigravity-acp/agy_acp_server.par --enforce_kernel_ipv6_support=false
 ```
-*(The `just probe` recipe detects this condition automatically and includes the bypass flag if IPv6 loopback is absent.)*
 
 ---
 
@@ -161,7 +165,8 @@ agy_acp_server.par --enforce_kernel_ipv6_support=false
 | `just checksums` | Updates SHA-256 checksums in `PKGBUILD` using `updpkgsums` |
 | `just srcinfo` | Regenerates `.SRCINFO` with `makepkg --printsrcinfo > .SRCINFO` |
 | `just lint` | Runs `namcap PKGBUILD` and `namcap *.pkg.tar.zst` |
-| `just clean` | Cleans `src/`, `pkg/`, `*.pkg.tar.zst`, and `*.zip` archives |
+| `just clean` | Cleans `src/`, `pkg/`, `*.pkg.tar.zst`, and log files |
+| `just distclean` | Full clean including downloaded `*.zip` source archives |
 | `just probe` | Sends standard 1-line JSON-RPC initialization payload via stdin |
 
 ---
@@ -173,7 +178,7 @@ When a new upstream release is published, update the package using the following
 1. **Update Version**:
    Edit [`PKGBUILD`](PKGBUILD) and increment `pkgver` (and reset `pkgrel=1`):
    ```bash
-   pkgver=1.4.0
+   pkgver=1.5.0
    pkgrel=1
    ```
 
@@ -204,7 +209,7 @@ When a new upstream release is published, update the package using the following
    ```bash
    # If AUR remote is configured:
    git add PKGBUILD .SRCINFO .gitignore README.md justfile
-   git commit -m "chore: release 1.4.0-1"
+   git commit -m "chore: release 1.5.0-1"
    git push origin main
    git push aur main:master
    ```
